@@ -21,5 +21,36 @@ class Base {
 		$this->_connect();
 	}
 
-	private function _connect() {}
+	private function _connect() {
+
+		$conn = 'mongodb://'.$this->_config['host'];
+		if(!empty($this->_config['port']))
+		{
+			$conn .= ":{$this->_config['port']}";
+		}
+
+		$options = array();
+		if(!empty($this->_config['user']) && !empty($this->_config['pass']))
+		{
+			$options['username'] = $this->_config['user'];
+			$options['password'] = $this->_config['pass'];
+		}
+
+		try
+		{
+			$this->_conn		= new \MongoClient( $conn, $options );
+
+			$this->_db			= $this->_conn->{$this->_config['db']};
+
+			return true;
+		}
+		catch( \MongoConnectionException $e )
+		{
+			$this->_conn		= null;
+
+			return false;
+		}
+
+	}
+
 }
