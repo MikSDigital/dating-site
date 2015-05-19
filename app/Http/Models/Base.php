@@ -118,4 +118,43 @@ class Base
 
 	}
 
+	// _set_where will check if the $where param is an
+	// array, and if so, it combines the given values with
+	// the existing ones using the _where helper method.
+
+	private function _set_where( $where = null )
+	{
+		if ( is_array( $where ) )
+		{
+			$where = array_merge( $where, $this->_ws );
+			foreach( $where as $k => $v )
+			{
+				if ( $k == "_id" && ( gettype( $v ) == "string" ) )
+				{
+					$this->_ws[$k] = new \MongoId( $v );
+				}
+				else
+				{
+					$this->_ws[$k] = $v;
+				}
+			}
+		}
+		else if ( is_string( $where ) )
+		{
+			$wheres = explode( ',', $where );
+			foreach ( $wheres as $wr )
+			{
+				$pair = explode( '=', trim( $wr ) );
+				if ( $pair[0] == "_id" )
+				{
+					$this->_ws[trim( $pair[0] )] = new \MongoId( trim( $pair[1] ) );
+				}
+				else
+				{
+					$this->_ws[trim( $pair[0] )] = trim( $pair[1] );
+				}
+			}
+		}
+	}
+
 }
