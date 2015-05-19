@@ -6,7 +6,8 @@
 
 use Illuminate\Support\Facades\Config;
 
-class Base {
+class Base
+{
 
 	private $_config		= null;
 
@@ -14,7 +15,71 @@ class Base {
 
 	private $_db			= null;
 
-	public function __construct() {
+	// The following are holders for the *where*,
+	// *select*, *limit* and *offset* of the DB queries.
+
+	private $_ws			= array();
+
+	private $_sls			= array();
+
+	private $_lmt			= 99999;
+
+	private $_ost			= 0;
+
+	// The _limit method will be useful for paginating the
+	// results of a READ operation.  The user can set the
+	// $limit param to specify the number of records to
+	// retrieve and optionally an $offset param to specify
+	// the page to read from.
+
+	protected function _limit( $limit, $offset = null )
+	{
+		if ( $limit !== NULL && is_numeric( $limit ) && $limit >= 1 )
+		{
+			$this->_lmt = $limit;
+		}
+		if ( $offset !== NULL && is_numeric( $offset ) && $offset >= 1 )
+		{
+			$this->_ost = $offset;
+		}
+
+	}
+
+	// The _select method will be used to determine which
+	// fields of a record a READ query must return.  The
+	// select statement must be provided as a comma-separated
+	// string.
+
+	protected function _select( $select = "" )
+	{
+		$fields = explode( ',', $select );
+		foreach ( $fields as $field )
+		{
+			$this->_sls[trim( $field )] = true;
+		}
+	}
+
+	// The _where method will be used to filter the query
+	// results and can either be an array or a key/value
+	// pair.
+
+	protected function _where( $key, $value = null )
+	{
+		if ( is_array( $key ) )
+		{
+			foreach( $key as $k => $v )
+			{
+				$this->_ws[$k] = $v;
+			}
+			else
+			{
+				$this->_ws[$key] = $value;
+			}
+		}
+	}
+
+	public function __construct()
+	{
 		
 		$this->_config		= Config::get( 'mongodb' );
 
