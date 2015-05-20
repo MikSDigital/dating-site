@@ -157,4 +157,15 @@ class Base
 		}
 	}
 
+	// _flush method will reset all the query parameters
+	// once the query has been performed.
+
+	private function _flush()
+	{
+		$this->_ws			= array();
+		$this->_sls			= array();
+		$this->_lmt			= 99999;
+		$this->_ost			= 0;
+	}
+
 }
