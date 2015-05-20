@@ -168,4 +168,38 @@ class Base
 		$this->_ost			= 0;
 	}
 
+	// Our _insert method will provide the CREATE operation
+	// from the MongoDB interface.
+	// Even though the PHP driver expects the inserted data
+	// to be an array, our class will support both arrays
+	// and objects.
+
+	protected function _insert( $collection, $data )
+	{
+		if( is_object( $data ) )
+		{
+			$data = ( array ) $data;
+		}
+
+		$result = false;
+
+		try
+		{
+			if( $this->_db->{$collection}->insert( $data ) )
+			{
+				$data['_id']		= ( string ) $data['_id'];
+				$result				= ( object ) $data;
+			}
+		}
+		catch
+		{
+			$result 				= new \stdClass();
+			$result->error 			= $e->getMessage();
+		}
+
+		$this->_flush();
+
+		return $result;
+	}
+
 }
