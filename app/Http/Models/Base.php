@@ -202,4 +202,13 @@ class Base
 		return $result;
 	}
 
+	protected function _findOne( $collection, $where = array() )
+	{
+		$this->_set_where( $where );
+
+		$row	= $this->_db->{$collection}->findOne( $this->_ws, $this->_sls );
+		$this->_flush();
+		return ( object ) $row;
+	}
+
 }
