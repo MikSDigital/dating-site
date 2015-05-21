@@ -202,13 +202,38 @@ class Base
 		return $result;
 	}
 
+	// We're going to implement two READ methods.  One will be
+	// used to retrieve a single record while the other will be
+	// used to fetch a list of records.
+
 	protected function _findOne( $collection, $where = array() )
 	{
 		$this->_set_where( $where );
 
 		$row	= $this->_db->{$collection}->findOne( $this->_ws, $this->_sls );
 		$this->_flush();
+		
 		return ( object ) $row;
+	}
+
+	protected function _find( $collection, $where = array() )
+	{
+		$this->_set_where( $where );
+
+		$docs = $this->_db->{$collection}
+			->find( $this->_ws, $this->_sls )
+			->limit( $this->_lmt )
+			->skip( $this->_ost );
+		$this->_flush();
+
+		$result = array();
+		
+		foreach( $docs as $row )
+		{
+			$result[] = ( object ) $row;
+		}
+
+		return $result;
 	}
 
 }
