@@ -261,7 +261,9 @@ class Base
 		try
 		{
 			if ( $this->_db->{$collection}->update( $this->_ws, $newdoc ) )
+			{
 				$result = ( object ) $data;
+			}
 		}
 		catch ( \MongoCursorException $e )
 		{
@@ -272,6 +274,27 @@ class Base
 		$this->_flush();
 
 		return $result;
+	}
+
+	// DELETE operation for database
+
+	protected function _remove( $collection, $where = array() )
+	{
+		$this->_set_where( $where );
+
+		$result = false;
+		try
+		{
+			if ( $this->_db->{$collection}->remove( $this->_ws ) )
+			{
+				$result = true;
+			}
+		}
+		catch ( \MongoCursorException $e )
+		{
+			$result 			= new \stdClass();
+			$result->error 		= $e->getMessage();
+		}
 	}
 
 }
