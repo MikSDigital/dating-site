@@ -236,4 +236,42 @@ class Base
 		return $result;
 	}
 
+	// UPDATE method to edit or modify a record's data
+
+	protected function _update( $collection, $data, $where = array() )
+	{
+		if ( is_object( $data ) )
+		{
+			$daa = ( array ) $data;
+		}
+
+		$this->_set_where( $where );
+
+		if ( array_key_exists( '$set', $data) )
+		{
+			$newdoc = $data;
+		}
+		else
+		{
+			$newdoc = array( '$set' => $data );
+		}
+
+		$result = false;
+
+		try
+		{
+			if ( $this->_db->{$collection}->update( $this->_ws, $newdoc ) )
+				$result = ( object ) $data;
+		}
+		catch ( \MongoCursorException $e )
+		{
+			$result 			= new \stdClass();
+			$result->error 		= $e->getMessage();
+		}
+
+		$this->_flush();
+
+		return $result;
+	}
+
 }
