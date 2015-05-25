@@ -25,7 +25,14 @@ class User extends Model
 		}
 	}
 
-	public function get_error() {}
+	// get_error is a helper method that will provide
+	// the controller with more information about
+	// failure in the model.
+
+	public function get_error()
+	{
+		return this->error;
+	}
 
 	public function create( $user ) {}
 
