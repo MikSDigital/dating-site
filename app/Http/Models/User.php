@@ -8,7 +8,22 @@ class User extends Model
 
 	private $_error	= null;
 
-	public function get( $where ) {}
+	// We check if the $where parameter being passed
+	// is an array.  If not, we assume it's a user ID
+	// and pass the information to the _findOne method.
+
+	public function get( $where )
+	{
+		if ( is_array( $where ) )
+		{
+			return $this->_findOne( $this->_col, $where );
+		}
+		else
+		{
+			$this->_where( '_id', $where );
+			return $this->_findOne( $this->_col );
+		}
+	}
 
 	public function get_error() {}
 
