@@ -130,6 +130,15 @@ class User extends Model
 
 	//************  UPDATE operations  ************//
 
+	// As in the Base class, the update method accepts
+	// both arrays and objects as the data for the user.
+	// This makes the method much more flexible.
+	// Before we update the user record, we make sure
+	// the user's email and mobile aren't already in
+	// use by another user.  If so, we set the error
+	// EXISTING_USER and return false.  Otherwise, we
+	// delegate the update operation to the Base class.
+
 	public function update( $id, $data )
 	{
 		if ( is_array( $data ) )
@@ -165,7 +174,7 @@ class User extends Model
 		}
 
 		$this->_where( '_id', $id );
-		
+
 		return $this->_update( $this->_col, ( array ) $data );
 	}
 
