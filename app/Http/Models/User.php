@@ -38,10 +38,10 @@ class User extends Model
 
 	// The retrieve method will fetch a list of users.
 	// It supports pagination and geospatial queries.
-	// If the $id and $distance parameters are passed,
+	// If the _id and distance parameters are passed,
 	// it attempts to search for nearby users based
 	// on location.
-	// If $id does not match a record, it returns false.
+	// If _id does not match a record, it returns false.
 	// If the user exists, it prepares a geospatial
 	// query using a MongoDB 2dsphere index. 
 
@@ -92,15 +92,40 @@ class User extends Model
 
 	//************  DELETE operations  ************//
 
+	// remove method for deleting users.
+	// We check that the given _id corresponds to an
+	// existing user and attempt to remove it using
+	// the _remove method of the Base class.
+	// If something goes wrong, we set the model's
+	// _error property and return false.
+
 	public function remove( $id )
 	{
+		$this->_where( '_id', $id );
+		$user = $this->_findOne( $this->_col );
 
+		if ( empty( ( array ) $user ) )
+		{
+			$this->_error		= "ERROR_INVALID_ID";
+			return false;
+		}
+		else
+		{
+			$this->_where( '_id', $id );
+			if ( !$this->_remove( $this->_col ) )
+			{
+				$this->_error	= "ERROR_REMOVING_USER";
+				return false;
+			}
+		}
+
+		return $user;
 	}
 
 	//************  UPDATE operations  ************//
 
 	public function update( $id, $data )
 	{
-		
+
 	}
 }
