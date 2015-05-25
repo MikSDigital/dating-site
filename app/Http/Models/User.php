@@ -8,6 +8,41 @@ class User extends Model
 
 	private $_error	= null;
 
+	//************  CREATE operations  ************//
+
+	public function create( $user )
+	{
+		if ( is_array( $user ) )
+		{
+			$user = ( object ) $user;
+		}
+
+		$this->_where( '$or', array(
+				array(
+					"email"		=> $user->email
+					),
+				array(
+					"mobile"	=> $user->mobile
+					)
+				)
+			);
+
+		$existing = $this->_findOne( $this->_col );
+
+		if ( empty( ( array ) $existing ) ) 
+		{
+			$user 	= $this->_insert( $this->_col, $user );
+		}
+		else
+		{
+			$user 	= $existing;
+		}
+
+		$user->_id 	= ( string ) $user->_id;
+
+		return $user;
+	}
+
 	//************  READ operations  ************//
 
 	// We check if the $where parameter being passed
@@ -82,10 +117,9 @@ class User extends Model
 		return $this->_find( $this->_col );
 	}
 
+	//************  UPDATE operations  ************//
 
-	//************  CREATE operations  ************//
-
-	public function create( $user )
+	public function update( $id, $data )
 	{
 
 	}
@@ -122,10 +156,4 @@ class User extends Model
 		return $user;
 	}
 
-	//************  UPDATE operations  ************//
-
-	public function update( $id, $data )
-	{
-
-	}
 }
