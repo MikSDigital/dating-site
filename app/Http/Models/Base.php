@@ -168,6 +168,8 @@ class Base
 		$this->_ost			= 0;
 	}
 
+	//************  CREATE operations  ************//
+
 	// Our _insert method will provide the CREATE operation
 	// from the MongoDB interface.
 	// Even though the PHP driver expects the inserted data
@@ -202,9 +204,12 @@ class Base
 		return $result;
 	}
 
-	// We're going to implement two READ methods.  One will be
-	// used to retrieve a single record while the other will be
-	// used to fetch a list of records.
+	//************  READ operations  ************//
+
+	// We're going to implement two READ methods.
+	// One will be used to retrieve a single record
+	// while the other will be used to fetch a list
+	// of records.
 
 	protected function _findOne( $collection, $where = array() )
 	{
@@ -235,6 +240,8 @@ class Base
 
 		return $result;
 	}
+
+	//************  UPDATE operations  ************//
 
 	// UPDATE method to edit or modify a record's data
 
@@ -275,6 +282,8 @@ class Base
 
 		return $result;
 	}
+
+	//************  DELETE operations  ************//
 
 	// DELETE operation for database
 

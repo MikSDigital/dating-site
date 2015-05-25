@@ -10,6 +10,17 @@ class User extends Model
 
 	//************  CREATE operations  ************//
 
+	// In this method, we make sure there isn't already
+	// a user associated with the given email or mobile.
+	// If that is true, we return the corresponding user.
+	// If not, we delegate the task to create a user to
+	// the _insert method of the Base class.
+	// Before we return the user record, we cast the _id
+	// to a string, as the object that is returned to
+	// us defines the _id field as a MongoId object.
+	// The client application, however, doesn't need
+	// this object.
+
 	public function create( $user )
 	{
 		if ( is_array( $user ) )
@@ -121,7 +132,41 @@ class User extends Model
 
 	public function update( $id, $data )
 	{
+		if ( is_array( $data ) )
+		{
+			$data = ( object ) $data;
+		}
 
+		if ( isset( $data->email ) || isset( $data->mobile ) )
+		{
+			$this->_where( '$and', array(
+					array(
+						'_id'		=> array( '$ne' => new \MongoId( $id ) )
+						),
+					array(
+						'$or'		=> array(
+							array(
+								'email'		=> ( isset( $data->email ) ) ? $data->email : ""
+								),
+							array(
+								'mobile'	=> ( isset( $data->mobile ) ) ? $data->mobile : ""
+								)
+							)
+						)
+				)
+			);
+
+			$existing = $this->_findOne( $this->_col );
+			if ( !empty( ( array ) $existing ) && $existing->_id != $id )
+			{
+				$this->_error 	= "ERROR_EXISTING_USER";
+				return false;
+			}
+		}
+
+		$this->_where( '_id', $id );
+		
+		return $this->_update( $this->_col, ( array ) $data );
 	}
 
 	//************  DELETE operations  ************//
