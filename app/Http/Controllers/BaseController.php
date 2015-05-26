@@ -15,6 +15,10 @@ class BaseController extends Controller {
 	// when updating a user record, the user corresponding
 	// with the active session needs to match the _id of
 	// the record that needs to be updated.
+	// We fetch the session for the session token and if
+	// the id of the user that corresponds with the session
+	// matches the id that is passed in the second argument,
+	// we return the session.  Otherwise, we return false.
 
 	protected function _check_session( $token = "", $id = "" )
 	{
