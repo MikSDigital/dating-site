@@ -24,7 +24,15 @@ class SessionController extends BaseController {
 
 	public function destroy( $token )
 	{
-		
+		$result = new \stdClass();
+
+		if ( $this->_model->remove( $token ) )
+		{
+			$result->error 	= "ERROR_REMOVING_SESSION";
+			$result->status = 403;
+		}
+
+		return $this->_response( $result );
 	}
 
 }
