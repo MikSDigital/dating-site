@@ -12,6 +12,11 @@ class SessionController extends BaseController {
 
 	private $_model = null;
 
+	// We set the controller model's object in the
+	// constructor and declare a couple of methods,
+	// which are the actions supported by the
+	// Sessions resource.
+
 	public function __construct()
 	{
 		$this->_model	= new SessionModel();
@@ -21,6 +26,14 @@ class SessionController extends BaseController {
 	{
 
 	}
+
+	// The destroy method uses the SessionModel's
+	// remove method and returns the result using
+	// the _response method of the BaseController
+	// class.  If removing the session is
+	// successful, we return an empty object. If
+	// an error occurred, we return an error with
+	// a 403 status code.
 
 	public function destroy( $token )
 	{
