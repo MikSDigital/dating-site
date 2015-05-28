@@ -22,9 +22,54 @@ class SessionController extends BaseController {
 		$this->_model	= new SessionModel();
 	}
 
+	// We first check for an existing user with the
+	// passed in email or mobile.  If the user exists,
+	// we verify that the given Facebook ID matches
+	// the Facebook ID for the user record.  If that's
+	// the case, we create the session object.  If it
+	// isn't, the method returns a INVALID_CREDENTIALS
+	// error with a 403 status code.
+
 	public function create( Request $request )
 	{
+		$email 		= $request->get( 'email' );
+		$mobile 	= $request->get( 'mobile' );
+		$fbId		= $request->get( 'fbId' );
 
+		$result		= new \stdClass();
+		if ( ( empty( $email ) && empty( $mobile ) ) || empty( $fbId ) )
+		{
+			$result->error 	= "ERROR_INVALID_PARAMETERS";
+			$result->status = 403;
+		}
+		else
+		{
+			$UserModel	= new UserModel();
+			$where		= ( !empty( $email ) ) ? array( 'email' => $email ) : array( 'mobile' => $mobile );
+			$user 		= $UserModel->get( $where );
+
+			if ( empty( ( array ) $user ) )
+			{
+
+			}
+			else
+			{
+				if ( $fbId != $user->fbId )
+				{
+					$result->error 	= "ERROR_INVALID_CREDENTIALS";
+					$result->status = 403;
+				}
+			}
+
+			if ( !property_exists( $result, "error" ) )
+			{
+				$result 		= $this->_model->create( $user );
+				$result->token 	= $result->_id;
+				unset( $result->_id );
+			}
+		}
+
+		return $this->_response( $result );
 	}
 
 	// The destroy method uses the SessionModel's
