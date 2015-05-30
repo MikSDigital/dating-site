@@ -18,6 +18,14 @@ class UserController extends Controller {
 
 	public function create( Request $request ) {}
 
+	// To retrieve a record from the system, we
+	// require that the user has an active session.
+	// It doesn't have to match the id of the
+	// retrieved user.  If the user doesn't have a
+	// valid session, we return a PERMISSION_DENIED
+	// error with a 403 status code.  Otherwise we
+	// return the user record as a JSON object.
+
 	public function get( Request $request, $id )
 	{
 		$token 	= $request->get( 'token' );
