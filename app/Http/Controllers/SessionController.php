@@ -61,6 +61,34 @@ class SessionController extends BaseController {
 				}
 				else
 				{
+					// We first retrieve the rest of the required
+					// parameters from the request and then check
+					// if the location parameter is given as a
+					// JSON object or an encoded JSON object
+					// (string).  The method is expecting this
+					// param to be in the following format:
+
+					// {
+					//		"lat"	: 37.427208696456866,
+					//		"lon"	: -122.17097282409668
+					// }
+
+					// We then transform this location into a
+					// MongoDB 2dSphere location.  To execute
+					// geospatial queries, this filed needs to be
+					// in the following format:
+
+					// {
+					//		"type"			: "Point",
+					//		"coordinates"	: [ -122.17097282409668, 37.427208696456866 ]
+					// }
+
+					// After setting the location object, we
+					// check that the user required paramters
+					// exist and, if that's the case, we create
+					// a new user object using the create method
+					// of the UserModel class.
+
 					if ( gettype( $location ) == "string" )
 					{
 						$location	= json_decode( $location );
