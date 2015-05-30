@@ -18,7 +18,61 @@ class UserController extends Controller {
 
 	//************  CREATE operations  ************//
 
-	public function create( Request $request ) {}
+	// We first retrieve the necessary information
+	// for the user and, as in the session creation
+	// handler, we convert the user's location to the
+	// appropriate format.
+
+	// After this, we check that the required
+	// information is passed in. Note that even though
+	// both the email and mobile fields are optional,
+	// at least one must be present.
+
+	// After these checks, we invoke the create method
+	// of the UserModel class to insert the new user
+	// in the database. Finally, we return the new
+	// user or an error.
+
+	public function create( Request $request )
+	{
+		$email		= $request->get( 'email' );
+		$fbId		= $request->get( 'fbId' );
+		$gender		= $request->get( 'gender' );
+		$location	= $request->get( 'location' );
+		$mobile		= $request->get( 'mobile' );
+		$name		= $request->get( 'name' );
+
+		if ( gettype( $location ) == "string" )
+		{
+			$location	= json_decode( $location );
+		}
+
+		$locObj					= new \stdClass();
+		$locObj->type 			= "Point";
+		$locObj->coordinates	= array( $location->lon, $location->lat );
+		
+		$result 	= new \stdClass();
+		if ( empty( $name ) || empty( ( array ) $location ) || empty ( $fbId ) || empty ( $gender ) || ( empty ( $email ) && empty ( $mobile ) ) )
+		{
+			$result->error 		= "ERROR_INVALID_PARAMETERS";
+			$result->status 	= 403;
+		}
+		else
+		{
+			$user 	= array(
+				"email"		=> $email,
+				"fbId"		=> $fbId,
+				"gender"	=> $gender,
+				"location"	=> $locObj,
+				"mobile"	=> $mobile,
+				"name"		=> $name
+			);
+
+			$result = $this->_model->create( $user );
+		}
+
+		return $this->_response( $result );
+	}
 
 	// To retrieve a record from the system, we
 	// require that the user has an active session.
