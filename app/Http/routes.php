@@ -11,4 +11,19 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+// We map API requests to the methods previously added
+// to our controllers.
+
+Route::post( 'sessions', 'SessionController@create' );
+
+Route::delete( 'sessions/{token}', 'SessionController@destroy' );
+	
+Route::delete( 'users/{id}', 'UserController@remove' );
+	
+Route::get( 'users', 'UserController@retrieve' );
+	
+Route::get( 'users/{id}', 'UserController@get' );
+	
+Route::post( 'users', 'UserController@create' );
+	
+Route::put( 'users/{id}', 'UserController@update' );
