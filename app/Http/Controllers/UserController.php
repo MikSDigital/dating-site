@@ -137,9 +137,84 @@ class UserController extends Controller {
 	
 	//************  UPDATE operations  ************//
 	
+	// We validate the data that's passed in and set
+	// the appropriate object for what to update. In
+	// the case of the location parameter, we reformat
+	// it first.
+
+	// Again, this method should only be accessible by
+	// users with an active session that corresponds
+	// to their own _id. This means that we first
+	// check that's the case.
+
+	// We then invoke the update method of the
+	// UserModel class and return the result to the
+	// client.
+
 	public function update( Request $request, $id )
 	{
+		$token 		= $request->get( 'token' );
+		$data 		= new \stdClass();
 
+		if ( !empty( $email = $request->get( 'email' ) ) )
+		{
+			$data->email 	= $email;
+		}
+
+		if ( !empty( $fbId = $request->get( 'fbId' ) ) )
+		{
+			$data->fbId 	= $fbId;
+		}
+
+		if ( !empty( $gender = $request->get( 'gender' ) ) )
+		{
+			$data->gender 	= $gender;
+		}
+
+		if ( !empty( $location = $request->get( 'location' ) ) )
+		{
+			if ( gettype( $location ) == "string" )
+			{
+				$location 	= json_decode( $location );
+			}
+
+			$locObj 				= new \stdClass();
+			$locObj->type 			= "Point";
+			$locObj->coordinates 	= array( $location->lon, $location->lat );
+		
+			$data->location = $locObj;
+		}
+
+		if ( !empty( $mobile = $request->get( 'mobile' ) ) )
+		{
+			$data->mobile 	= $mobile;
+		}
+
+		if ( !empty( $name = $request->get( 'name' ) ) )
+		{
+			$data->name 	= $name;
+		}
+
+		$result 	= new \stdClass();
+
+		if ( !$this->_check_session( $token, $id ) )
+		{
+			$result->error 	= "PERMISSION_DENIED";
+			$result->status = 403;
+		}
+		else
+		{
+			$result	= $this->_model->update( $id, $data );
+
+			if ( !$result )
+			{
+				$result 		= new \stdClass();
+				$result->error 	= $this->_model->get_error();
+				$result->status = 403;
+			}
+		}
+
+		return $this->_response( $result );
 	}
 
 	//************  DELETE operations  ************//
