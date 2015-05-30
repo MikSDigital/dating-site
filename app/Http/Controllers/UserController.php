@@ -144,9 +144,38 @@ class UserController extends Controller {
 
 	//************  DELETE operations  ************//
 
+	// This is one of those methods in which we want
+	// the _id of the user to be removed to match the
+	// _id of the user with the active session. This
+	// is the first thing we verify. If that's the
+	// case, we delegate to the model's remove method.
+	// Otherwise, we set the error to
+	// PERMISSION_DENIED and send the result back to
+	// the user.
+
 	public function remove( Request $request, $id )
 	{
+		$token		= $request->get( 'token' );
+		$result 	= new \stdClass();
 
+		if ( !$this->_check_session( $token, $id ) )
+		{
+			$result->error 	= "PERMISSION_DENIED";
+			$result->status = 403;
+		}
+		else
+		{
+			$result	= $this->_model->remove( $id );
+
+			if ( !$result )
+			{
+				$result 		= new \stdClass();
+				$result->error 	= $this->_model->get_error();
+				$result->status = 403;
+			}
+		}
+
+		return $this->_response( $result );
 	}
 
 }
