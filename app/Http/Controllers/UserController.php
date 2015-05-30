@@ -18,7 +18,23 @@ class UserController extends Controller {
 
 	public function create( Request $request ) {}
 
-	public function get( Request $request, $id ) {}
+	public function get( Request $request, $id )
+	{
+		$token 	= $request->get( 'token' );
+
+		$result = new \stdClass();
+		if ( !$this->_check_session( $token ) )
+		{
+			$result->error 	= "PERMISSION_DENIED";
+			$result->status = 403;
+		}
+		else
+		{
+			$result = $this->_model->get( $id );
+		}
+
+		return $this->_response( $result );
+	}
 	
 	public function remove( Request $request, $id ) {}
 	
