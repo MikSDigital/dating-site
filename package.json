@@ -1,4 +1,7 @@
 {
+  "name": "laravel-dating-site",
+  "version": 0.0.1,
+  "author": "gnchapman",
   "private": true,
   "devDependencies": {
     "gulp": "^3.8.8",
